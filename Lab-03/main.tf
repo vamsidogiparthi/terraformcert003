@@ -1,5 +1,9 @@
+// Provider Block to define the provider needed
 provider "aws" {
-  region = var.aws_region
+  region                  = var.aws_region
+  shared_config_files = ["/Users/tf_user/.aws/creds"]
+  profile                 = "customprofile"
+
 }
 
 data "aws_availability_zones" "available" {}
@@ -51,6 +55,7 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
+// Resource block example to create a private route table
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.vpc.id
 
@@ -106,15 +111,18 @@ resource "aws_nat_gateway" "nat_gateway" {
   }
 }
 
+resource "aws_s3_bucket" "my-new-S3-bucket" {   
+  bucket = "my-new-tf-test-bucket-vk" // globally unique
 
-resource "aws_instance" "web" {
-  ami           = "ami-0d0f28110d16ee7d6"
-  instance_type = "t3.micro"
+  tags = {     
+    Name = "My S3 Bucket"     
+    Purpose = "Intro to Resource Blocks Lab"   
+  } 
+}
 
-  subnet_id              = aws_subnet.public_subnets["public_subnet_1"].id
-  vpc_security_group_ids = [sg-0ae924aae145d8618]
-
-  tags = {
-    "TerraformResourceBlock" = "true"
+resource "aws_s3_bucket_ownership_controls" "my_new_bucket_acl" {   
+  bucket = aws_s3_bucket.my-new-S3-bucket.id  
+  rule {     
+    object_ownership = "BucketOwnerPreferred"   
   }
 }
