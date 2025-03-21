@@ -139,3 +139,16 @@ resource "aws_s3_bucket" "my-new-S3-bucket" {
     Purpose = "Intro to Resource Blocks Lab"
   }
 }
+
+
+resource "aws_subnet" "variables-subnet" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.variables_sub_cidr
+  availability_zone       = var.variables_sub_az
+  map_public_ip_on_launch = var.variables_sub_auto_ip
+
+  tags = {
+    Name      = "sub-variables-${var.variables_sub_az}" // using the variable via string interpolation to create a unique name
+    Terraform = "true"
+  }
+}
